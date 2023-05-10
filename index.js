@@ -103,16 +103,16 @@ const callSignFormats = [
 // Create every combination of AA-ZZ and AAA-ZZZ
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const allSuffixes = [];
-for(let i = 0; i < alphabet.length; i++) {
+for (let i = 0; i < alphabet.length; i++) {
     // Two-letter suffixes
-    for(let j = 0; j < alphabet.length; j++) {
+    for (let j = 0; j < alphabet.length; j++) {
         const suffix = alphabet[i] + alphabet[j];
         allSuffixes.push(suffix);
     }
 
     // Three-letter suffixes
-    for(let j = 0; j < alphabet.length; j++) {
-        for(let k = 0; k < alphabet.length; k++) {
+    for (let j = 0; j < alphabet.length; j++) {
+        for (let k = 0; k < alphabet.length; k++) {
             const suffix = alphabet[i] + alphabet[j] + alphabet[k];
             allSuffixes.push(suffix);
         }
@@ -125,93 +125,100 @@ const nonForbiddenSuffixes = allSuffixes.filter(suffix => !forbiddenSuffixes.inc
 
 console.info('nonForbiddenSuffixes', nonForbiddenSuffixes);
 
+// replace contents of container element with table
+let newTableElem = createCallSignTable();
+tableContainerElement.innerHTML = '';
+tableContainerElement.appendChild(newTableElem);
 
-// Create table with all possible call signs
-// All suffixes in alphabetical order for each row heading, and all prefixes in alphabetical order for each column heading
-const tableElement = document.createElement('table');
-tableElement.classList.add('table', 'table-bordered', 'table-striped', 'table-hover', 'table-sm');
 
-const theadElement = document.createElement('thead');
-const theadRowElement = document.createElement('tr');
+function createCallSignTable() {
+    // Create table with all possible call signs
+    // All suffixes in alphabetical order for each row heading, and all prefixes in alphabetical order for each column heading
+    const tableElement = document.createElement('table');
+    tableElement.classList.add('table', 'table-bordered', 'table-striped', 'table-hover', 'table-sm');
 
-const thElement = document.createElement('th');
-thElement.setAttribute('scope', 'col');
-thElement.textContent = 'Suffix';
-
-theadRowElement.appendChild(thElement);
-
-for (let i = 0; i < callSignFormats.length; i++) {
-    const callSignFormat = callSignFormats[i];
-    console.info('callSignFormat', callSignFormat);
+    const theadElement = document.createElement('thead');
+    const theadRowElement = document.createElement('tr');
 
     const thElement = document.createElement('th');
     thElement.setAttribute('scope', 'col');
-    thElement.textContent = callSignFormat.prefix;
-
-    // Style the cell if it is a formerly issued call sign
-    if (callSignFormat.isFormerlyIssued) {
-        thElement.classList.add('not-currently-issued');
-    }
+    thElement.textContent = 'Suffix';
 
     theadRowElement.appendChild(thElement);
-}
 
-theadElement.appendChild(theadRowElement);
-tableElement.appendChild(theadElement);
+    for (let i = 0; i < callSignFormats.length; i++) {
+        const callSignFormat = callSignFormats[i];
+        console.info('callSignFormat', callSignFormat);
 
-
-const estimatedCellCount = allSuffixes.length * callSignFormats.length;
-let cellCount = 0;
-let shortTableForDev = false;
-
-const tbodyElement = document.createElement('tbody');
-
-for (let i = 0; i < allSuffixes.length; i++) {
-    const suffix = allSuffixes[i];
-    const trElement = document.createElement('tr');
-
-    // Style the row if it's a forbidden suffix
-    if (forbiddenSuffixes.includes(suffix)) {
-        trElement.classList.add('forbidden-suffix');
-        trElement.classList.add('table-danger');
-    }
-    // Only allow two-letter suffixes if previously allocated (i.e., not currently issued)
-    if(suffix.length === 2) {
-        trElement.classList.add('two-letter-suffix');
-        trElement.classList.add('table-warning');
-    }
-
-    const thElement = document.createElement('th');
-    thElement.setAttribute('scope', 'row');
-    thElement.textContent = suffix;
-
-    trElement.appendChild(thElement);
-
-    for (let j = 0; j < callSignFormats.length; j++) {
-        cellCount++;
-        if(shortTableForDev && cellCount > 1000) {
-            continue;
-        }
-        if (cellCount % 1000 === 0 || cellCount === estimatedCellCount) {
-            console.debug('cellCount', cellCount, 'of', estimatedCellCount, '(', Math.round(cellCount / estimatedCellCount * 1000) / 10, '%)');
-        }
-
-        const callSignFormat = callSignFormats[j];
-
-        const tdElement = document.createElement('td');
-        tdElement.textContent = callSignFormat.prefix + suffix;
+        const thElement = document.createElement('th');
+        thElement.setAttribute('scope', 'col');
+        thElement.textContent = callSignFormat.prefix;
 
         // Style the cell if it is a formerly issued call sign
         if (callSignFormat.isFormerlyIssued) {
-            tdElement.classList.add('not-currently-issued');
+            thElement.classList.add('not-currently-issued');
         }
 
-        trElement.appendChild(tdElement);
+        theadRowElement.appendChild(thElement);
     }
 
-    tbodyElement.appendChild(trElement);
+    theadElement.appendChild(theadRowElement);
+    tableElement.appendChild(theadElement);
+
+
+    const estimatedCellCount = allSuffixes.length * callSignFormats.length;
+    let cellCount = 0;
+    let shortTableForDev = false;
+
+    const tbodyElement = document.createElement('tbody');
+
+    for (let i = 0; i < allSuffixes.length; i++) {
+        const suffix = allSuffixes[i];
+        const trElement = document.createElement('tr');
+
+        // Style the row if it's a forbidden suffix
+        if (forbiddenSuffixes.includes(suffix)) {
+            trElement.classList.add('forbidden-suffix');
+            trElement.classList.add('table-danger');
+        }
+        // Only allow two-letter suffixes if previously allocated (i.e., not currently issued)
+        if (suffix.length === 2) {
+            trElement.classList.add('two-letter-suffix');
+            trElement.classList.add('table-warning');
+        }
+
+        const thElement = document.createElement('th');
+        thElement.setAttribute('scope', 'row');
+        thElement.textContent = suffix;
+
+        trElement.appendChild(thElement);
+
+        for (let j = 0; j < callSignFormats.length; j++) {
+            cellCount++;
+            if (shortTableForDev && cellCount > 1000) {
+                continue;
+            }
+            if (cellCount % 1000 === 0 || cellCount === estimatedCellCount) {
+                console.debug('cellCount', cellCount, 'of', estimatedCellCount, '(', Math.round(cellCount / estimatedCellCount * 1000) / 10, '%)');
+            }
+
+            const callSignFormat = callSignFormats[j];
+
+            const tdElement = document.createElement('td');
+            tdElement.textContent = callSignFormat.prefix + suffix;
+
+            // Style the cell if it is a formerly issued call sign
+            if (callSignFormat.isFormerlyIssued) {
+                tdElement.classList.add('not-currently-issued');
+            }
+
+            trElement.appendChild(tdElement);
+        }
+
+        tbodyElement.appendChild(trElement);
+    }
+
+    tableElement.appendChild(tbodyElement);
+
+    return tableElement;
 }
-
-tableElement.appendChild(tbodyElement);
-
-tableContainerElement.appendChild(tableElement);
