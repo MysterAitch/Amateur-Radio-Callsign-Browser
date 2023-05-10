@@ -125,6 +125,57 @@ const nonForbiddenSuffixes = allSuffixes.filter(suffix => !forbiddenSuffixes.inc
 
 console.info('nonForbiddenSuffixes', nonForbiddenSuffixes);
 
+
+/*
+Call Sign,Status,Product,Call Sign MMSI: Last Modified Date
+M7RFT,Allocated,Amateur Foundation Radio Licence,05/11/2022
+M3YVL,Allocated,Amateur Foundation Radio Licence,23/07/2016
+M7CVI,Allocated,Amateur Foundation Radio Licence,28/01/2022
+M6DNO,Allocated,Amateur Foundation Radio Licence,10/08/2016
+M7VIK,Allocated,Amateur Foundation Radio Licence,27/10/2022
+M3CAB,Allocated,Amateur Foundation Radio Licence,29/01/2022
+M7EIE,Allocated,Amateur Foundation Radio Licence,26/10/2021
+M6GWB,Allocated,Amateur Foundation Radio Licence,16/11/2019
+20LQX,Allocated,Amateur Intermediate Radio Licence,20/01/2022
+ */
+
+class CallSignRecord {
+    constructor(callSign, status, product, lastModifiedDate) {
+        this.callSign = callSign;
+        this.status = status;
+        this.product = product;
+        this.lastModifiedDate = lastModifiedDate;
+    }
+}
+
+// fetch csv data from url and return as array of CallSignRecord objects
+async function fetchCsv(url) {
+    const response = await fetch(url);
+    const text = await response.text();
+    // split by any line separator
+    const rows = text.split(/\r\n|\n|\r/);
+    const callSignRecords = rows.map(row => {
+        const columns = row.split(',');
+        return new CallSignRecord(columns[0], columns[1], columns[2], columns[3]);
+    });
+    return callSignRecords;
+}
+
+const callSignRecords = await fetchCsv('data/amateur-callsigns--latest.csv');
+
+console.info('callSignRecords', callSignRecords);
+
+// turn callSignRecords into a map of callSign to CallSignRecord
+const callSignRecordMap = new Map();
+for (let i = 0; i < callSignRecords.length; i++) {
+    const callSignRecord = callSignRecords[i];
+    callSignRecordMap.set(callSignRecord.callSign, callSignRecord);
+}
+
+console.info('callSignRecordMap', callSignRecordMap);
+
+
+
 // replace contents of container element with table
 let newTableElem = createCallSignTable();
 tableContainerElement.innerHTML = '';
@@ -148,7 +199,7 @@ function createCallSignTable() {
 
     for (let i = 0; i < callSignFormats.length; i++) {
         const callSignFormat = callSignFormats[i];
-        console.info('callSignFormat', callSignFormat);
+        console.debug('callSignFormat', callSignFormat);
 
         const thElement = document.createElement('th');
         thElement.setAttribute('scope', 'col');
@@ -199,17 +250,48 @@ function createCallSignTable() {
                 continue;
             }
             if (cellCount % 1000 === 0 || cellCount === estimatedCellCount) {
-                console.debug('cellCount', cellCount, 'of', estimatedCellCount, '(', Math.round(cellCount / estimatedCellCount * 1000) / 10, '%)');
+                // console.debug('cellCount', cellCount, 'of', estimatedCellCount, '(', Math.round(cellCount / estimatedCellCount * 1000) / 10, '%)');
             }
 
             const callSignFormat = callSignFormats[j];
 
             const tdElement = document.createElement('td');
-            tdElement.textContent = callSignFormat.prefix + suffix;
+            let plainCallsign = callSignFormat.prefix + suffix;
+            tdElement.textContent = plainCallsign;
 
             // Style the cell if it is a formerly issued call sign
             if (callSignFormat.isFormerlyIssued) {
                 tdElement.classList.add('not-currently-issued');
+            }
+
+            // Add allocation details if it is a currently issued call sign
+            if(callSignRecordMap.has(plainCallsign) && callSignRecordMap.get(plainCallsign).status === 'Allocated') {
+                const callSignRecord = callSignRecordMap.get(plainCallsign);
+                tdElement.classList.add('currently-issued');
+                tdElement.classList.add('table-success');
+                tdElement.setAttribute('data-toggle', 'tooltip');
+                tdElement.setAttribute('data-placement', 'top');
+                tdElement.setAttribute('title', callSignRecord.callSign + ' ' + callSignRecord.product + ' ' + callSignRecord.status + ' ' + callSignRecord.lastModifiedDate);
+
+                // Add details to cell
+                const detailsElement = document.createElement('div');
+                detailsElement.classList.add('details');
+                detailsElement.textContent = callSignRecord.product + ' ' + callSignRecord.status + ' ' + callSignRecord.lastModifiedDate;
+                tdElement.appendChild(detailsElement);
+            }
+
+            if(callSignRecordMap.has(plainCallsign) && callSignRecordMap.get(plainCallsign).status === 'Reserved') {
+                const callSignRecord = callSignRecordMap.get(plainCallsign);
+                tdElement.classList.add('currently-issued');
+                tdElement.classList.add('table-info');
+                tdElement.setAttribute('data-toggle', 'tooltip');
+                tdElement.setAttribute('data-placement', 'top');
+                tdElement.setAttribute('title', callSignRecord.callSign + ' ' + callSignRecord.product + ' ' + callSignRecord.status + ' ' + callSignRecord.lastModifiedDate);
+                // Add details to cell
+                const detailsElement = document.createElement('div');
+                detailsElement.classList.add('details');
+                detailsElement.textContent = callSignRecord.product + ' ' + callSignRecord.status + ' ' + callSignRecord.lastModifiedDate;
+                tdElement.appendChild(detailsElement);
             }
 
             trElement.appendChild(tdElement);
