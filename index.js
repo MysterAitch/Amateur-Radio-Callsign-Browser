@@ -278,7 +278,7 @@ function createCallSignTable() {
 
                 const detailsElement = document.createElement('div');
                 detailsElement.classList.add('details');
-                detailsElement.textContent = 'Not valid format';
+                detailsElement.textContent = 'Not accepted format';
 
                 tdElement.appendChild(detailsElement);
                 trElement.appendChild(tdElement);
