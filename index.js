@@ -100,13 +100,21 @@ const callSignFormats = [
 ];
 
 
-// Create every combination of AAA-ZZZ
+// Create every combination of AA-ZZ and AAA-ZZZ
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const allSuffixes = [];
-for (let i = 0; i < alphabet.length; i++) {
-    for (let j = 0; j < alphabet.length; j++) {
-        for (let k = 0; k < alphabet.length; k++) {
-            allSuffixes.push(alphabet[i] + alphabet[j] + alphabet[k]);
+for(let i = 0; i < alphabet.length; i++) {
+    // Two-letter suffixes
+    for(let j = 0; j < alphabet.length; j++) {
+        const suffix = alphabet[i] + alphabet[j];
+        allSuffixes.push(suffix);
+    }
+
+    // Three-letter suffixes
+    for(let j = 0; j < alphabet.length; j++) {
+        for(let k = 0; k < alphabet.length; k++) {
+            const suffix = alphabet[i] + alphabet[j] + alphabet[k];
+            allSuffixes.push(suffix);
         }
     }
 }
@@ -156,9 +164,13 @@ for (let i = 0; i < allSuffixes.length; i++) {
     const suffix = allSuffixes[i];
     const trElement = document.createElement('tr');
 
-    // style the row if it's a forbidden suffix
+    // Style the row if it's a forbidden suffix
     if (forbiddenSuffixes.includes(suffix)) {
         trElement.classList.add('table-danger');
+    }
+    // Only allow two-letter suffixes if previously allocated
+    if(suffix.length === 2) {
+        trElement.classList.add('table-warning');
     }
 
     const thElement = document.createElement('th');
