@@ -1,3 +1,15 @@
 thead {
     position: sticky;
 }
+
+.forbidden-suffix {
+}
+
+.two-letter-suffix {
+}
+
+tr.two-letter-suffix {
+}
+
+.not-currently-issued {
+}

@@ -148,6 +148,11 @@ for (let i = 0; i < callSignFormats.length; i++) {
     thElement.setAttribute('scope', 'col');
     thElement.textContent = callSignFormat.prefix;
 
+    // Style the cell if it is a formerly issued call sign
+    if (callSignFormat.isFormerlyIssued) {
+        thElement.classList.add('not-currently-issued');
+    }
+
     theadRowElement.appendChild(thElement);
 }
 
@@ -157,6 +162,7 @@ tableElement.appendChild(theadElement);
 
 const estimatedCellCount = allSuffixes.length * callSignFormats.length;
 let cellCount = 0;
+let shortTableForDev = false;
 
 const tbodyElement = document.createElement('tbody');
 
@@ -166,10 +172,12 @@ for (let i = 0; i < allSuffixes.length; i++) {
 
     // Style the row if it's a forbidden suffix
     if (forbiddenSuffixes.includes(suffix)) {
+        trElement.classList.add('forbidden-suffix');
         trElement.classList.add('table-danger');
     }
-    // Only allow two-letter suffixes if previously allocated
+    // Only allow two-letter suffixes if previously allocated (i.e., not currently issued)
     if(suffix.length === 2) {
+        trElement.classList.add('two-letter-suffix');
         trElement.classList.add('table-warning');
     }
 
@@ -181,6 +189,9 @@ for (let i = 0; i < allSuffixes.length; i++) {
 
     for (let j = 0; j < callSignFormats.length; j++) {
         cellCount++;
+        if(shortTableForDev && cellCount > 1000) {
+            continue;
+        }
         if (cellCount % 1000 === 0 || cellCount === estimatedCellCount) {
             console.debug('cellCount', cellCount, 'of', estimatedCellCount, '(', Math.round(cellCount / estimatedCellCount * 1000) / 10, '%)');
         }
@@ -189,6 +200,11 @@ for (let i = 0; i < allSuffixes.length; i++) {
 
         const tdElement = document.createElement('td');
         tdElement.textContent = callSignFormat.prefix + suffix;
+
+        // Style the cell if it is a formerly issued call sign
+        if (callSignFormat.isFormerlyIssued) {
+            tdElement.classList.add('not-currently-issued');
+        }
 
         trElement.appendChild(tdElement);
     }
