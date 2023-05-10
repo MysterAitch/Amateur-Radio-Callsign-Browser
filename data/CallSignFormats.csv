@@ -1,0 +1,23 @@
+Plain prefix,Prefix with RSL placeholder,Licence level,Number of suffix letters,Currently issued,Ever issued
+M7,M#7,Foundation,3,true,true,true
+20,2#0,Intermediate,3,true,false,true
+M0,M#0,Full,3,true,false,true
+M3,M#3,Foundation,3,false,true,true
+M6,M#6,Foundation,3,false,true,true
+21,2#1,Intermediate,3,false,true,true
+G1,G#1,Full,3,false,true,true
+G2,G#2,Full,2,false,true,true
+G2,G#2,Full,3,false,true,true
+G3,G#3,Full,2,false,true,true
+G3,G#3,Full,3,false,true,true
+G4,G#4,Full,2,false,true,true
+G4,G#4,Full,3,false,true,true
+G5,G#5,Full,2,false,true,true
+G6,G#6,Full,2,false,true,true
+G6,G#6,Full,3,false,true,true
+G7,G#7,Full,3,false,true,true
+G8,G#8,Full,2,false,true,true
+G8,G#8,Full,3,false,true,true
+G0,G#0,Full,3,false,true,true
+M1,M#1,Full,3,false,true,true
+M5,M#5,Full,3,false,true,true

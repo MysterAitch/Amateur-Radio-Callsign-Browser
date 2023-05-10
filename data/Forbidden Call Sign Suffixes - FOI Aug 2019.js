@@ -1,4 +1,4 @@
-﻿const forbiddenSuffixes = [
+﻿export const forbiddenSuffixes = [
     'ADS',
     'AID',
     'ASS',
