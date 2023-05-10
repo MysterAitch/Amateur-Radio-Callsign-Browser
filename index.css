@@ -13,3 +13,11 @@ tr.two-letter-suffix {
 
 .not-currently-issued {
 }
+
+.call-sign-table td {
+    text-align: center;
+}
+
+.call-sign-table td .details {
+    font-size: small;
+}
