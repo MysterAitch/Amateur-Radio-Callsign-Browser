@@ -3,6 +3,10 @@
 
 - UK amateur radio call signs are issued by Ofcom
 
+## Data
+
+- Amateur license [call sign data](https://www.ofcom.org.uk/research-and-data/data/opendata) is sourced and re-used under the [Open Government Licence](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/)
+
 
 ## Format details
 
